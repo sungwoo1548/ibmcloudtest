@@ -1,0 +1,5 @@
+---
+applications:
+ - name: geotest-775677
+   random-route: true
+   memory: 256M
