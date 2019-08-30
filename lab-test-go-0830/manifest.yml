@@ -1,0 +1,5 @@
+---
+applications:
+ - name: lab-test-go-0830
+   random-route: true
+   memory: 128M
