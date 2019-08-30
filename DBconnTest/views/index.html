@@ -49,7 +49,13 @@
 
             $('#btn_readDB').click(() => {
                 $.get('/readDB', (data, status) => {
-                    alert(JSON.stringify(data));
+                    $('#readDB_result').html(
+                        "<p> data length = "+ data.length+"</p>"
+                        +"<p> userid = "+data[1].USERID+"</p>"
+                        +"<hr> <p> location = "+data[1].GEODATA+"</p>"
+                    );
+
+                    // alert(data[1].USERID);
                 })
             });
 
@@ -74,6 +80,7 @@
         <h1>DB test</h1>
         <p id="readDB"> DB 조회결과 </p>
         <button id="btn_readDB">조회</button>
+        <div id="readDB_result"></div>
     </div>
     <footer class="footer">
         <div class="container">

@@ -4,8 +4,14 @@ var cfenv = require("cfenv");
 var bodyParser = require('body-parser')
 var ibmdb = require("ibm_db");
 var cn = require('./DBconfig');
-var connStr =require('./DBconfig');
+var connStr = require('./DBconfig');
 // Connection string without "DATABASE" keyword and value.
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
 
 // db 생성
 // ibmdb.open(cn, function (err, conn) {
@@ -28,24 +34,34 @@ var connStr =require('./DBconfig');
 // });
 
 // inset into 저장
-// ibmdb.open(cn, function (err, conn) {
-//   conn.prepare("insert into geotest (userid, geodata) VALUES (?, ?)", function (err, stmt) {
-//     if (err) {
-//       //could not prepare for some reason
-//       console.log(err);
-//       return conn.closeSync();
-//     }
-//     var img = { DataType: "BLOB", "Data": "smile2.jpg" };
-//     //Bind and Execute the statment asynchronously
-//     stmt.execute(['123', img], function (err, result) {
-//       if (err) console.log(err);
-//       else result.closeSync();
+app.post('/insertDB', (req, res, next) => {
+  // consol.log(res.body);
+  ibmdb.open(cn, function (err, conn) {
+    conn.prepare("insert into geotest (userid, geodata) VALUES (?, ?)", function (err, stmt) {
+      if (err) {
+        //could not prepare for some reason
+        console.log(err);
+        return conn.closeSync();
+      }
 
-//       //Close the connection
-//       conn.close(function (err) { });
-//     });
-//   });
-// });
+      // console.log(req.body);
+      // var test = {a : "123", b:"123124"};
+      var img = { DataType: "BLOB", "Data": JSON.stringify(req.body) };
+      //Bind and Execute the statment asynchronously
+      stmt.execute(['321', img], function (err, result) {
+        if (err) console.log(err);
+        else {
+          res.send("good");
+          result.closeSync();
+        }
+
+
+        //Close the connection
+        conn.close(function (err) { });
+      });
+    });
+  });
+})
 
 //DB 조회
 app.get('/readDB', (req, res, next) => {
@@ -55,11 +71,11 @@ app.get('/readDB', (req, res, next) => {
       console.log(err);
       return;
     }
-    connection.query("select * from geotest", function (err1, rows) {
+    connection.query("select * from geotest where userid='321'", function (err1, rows) {
       if (err1) console.log(err1);
       else {
         console.log(rows[1]);
-        res.send(rows);
+        res.json(rows);
       }
       connection.close(function (err2) {
         if (err2) console.log(err2);
@@ -68,11 +84,7 @@ app.get('/readDB', (req, res, next) => {
   });
 });
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
 
-// parse application/json
-app.use(bodyParser.json())
 
 let mydb, cloudant;
 var vendor; // Because the MongoDB and Cloudant use different API commands, we

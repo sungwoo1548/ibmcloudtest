@@ -25,5 +25,8 @@
     "mongodb": "^3.0.10"
   },
   "author": "IBM Corp",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
 }
